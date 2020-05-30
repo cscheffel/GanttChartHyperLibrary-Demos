@@ -15,7 +15,7 @@ export class AppComponent implements OnInit {
   title = 'Angular-GanttChartViewSampleApp';
 
   @ViewChild('ganttChartView', { read: ElementRef, static: true }) ganttChartViewRef: ElementRef;
-  ganttChartView: GanttChartView.Element; 
+  ganttChartView: GanttChartView.Element;
 
   items: GanttChartItem[];
   settings: GanttChartSettings;
@@ -47,10 +47,10 @@ export class AppComponent implements OnInit {
   isDependencyConstraintsActive: boolean;
 
   // Query string syntax: ?theme
-// Supported themes: Default, Generic-bright, Generic-blue, DlhSoft-gray, Purple-green, Steel-blue, Dark-black, Cyan-green, Blue-navy, Orange-brown, Teal-green, Purple-beige, Gray-blue, Aero.
+  // Supported themes: Default, Generic-bright, Generic-blue, DlhSoft-gray, Purple-green, Steel-blue, Dark-black, Cyan-green, Blue-navy, Orange-brown, Teal-green, Purple-beige, Gray-blue, Aero.
   queryString = window.location.search;
   theme = this.queryString ? this.queryString.substr(1) : null;
-  
+
   constructor() {
     var date = new Date(), year = date.getFullYear(), month = date.getMonth();
     var items = <GanttChartItem[]>[
@@ -59,12 +59,13 @@ export class AppComponent implements OnInit {
       { content: 'Task 1.2', indentation: 1, start: new Date(year, month, 3, 8, 0, 0), finish: new Date(year, month, 5, 12, 0, 0) },
       { content: 'Task 2', isExpanded: true, start: date },
       { content: 'Task 2.1', indentation: 1, start: new Date(year, month, 2, 8, 0, 0), finish: new Date(year, month, 8, 16, 0, 0), completedFinish: new Date(year, month, 5, 16, 0, 0), assignmentsContent: 'Resource 1, Resource 2 [50%]' },
-      { content: 'Task 2.2', indentation: 1, start: date},
+      { content: 'Task 2.2', indentation: 1, start: date },
       { content: 'Task 2.2.1', indentation: 2, start: new Date(year, month, 11, 8, 0, 0), finish: new Date(year, month, 14, 16, 0, 0), completedFinish: new Date(year, month, 14, 16, 0, 0), assignmentsContent: 'Resource 2' },
       { content: 'Task 2.2.2', indentation: 2, start: new Date(year, month, 12, 12, 0, 0), finish: new Date(year, month, 14, 16, 0, 0), assignmentsContent: 'Resource 2' },
       { content: 'Task 3', indentation: 1, start: new Date(year, month, 15, 16, 0, 0), isMilestone: true },
       { content: 'Task 4', indentation: 1, start: new Date(year, month, 15, 16, 0, 0), finish: new Date(year, month, 18, 16, 0, 0) },
-      { content: 'Task 5', indentation: 1, start: new Date(year, month, 16, 16, 0, 0), finish: new Date(year, month, 17, 16, 0, 0) }];
+      { content: 'Task 5', indentation: 1, start: new Date(year, month, 16, 16, 0, 0), finish: new Date(year, month, 17, 16, 0, 0) },
+      { content: 'Task with parts', indentation: 1, start: new Date(year, month, 16, 16, 0, 0), finish: new Date(year, month, 17, 16, 0, 0), parts: this.createParts()}];
 
     items[2].predecessors = <PredecessorItem[]>[{ item: items[1] }]; // Task 2 depends on Task 1.
     items[7].predecessors = <PredecessorItem[]>[{ item: items[6], dependencyType: 'StartStart' }]; // Task 6 depends on Task 5 using Start-Start dependency type.
@@ -113,7 +114,7 @@ export class AppComponent implements OnInit {
     settings.taskInitiationCost = 5;
     items[4].executionCost = 50;
     settings.defaultResourceUsageCost = 1;
-    settings.specificResourceUsageCosts = [{ key: 'Resource 1', value: 2 }, { key: 'Material 1', value: 7}];
+    settings.specificResourceUsageCosts = [{ key: 'Resource 1', value: 2 }, { key: 'Material 1', value: 7 }];
     settings.defaultResourceHourCost = 10;
     settings.specificResourceHourCosts = [{ key: 'Resource 1', value: 20 }, { key: 'Material 2', value: 0.5 }];
 
@@ -263,8 +264,8 @@ export class AppComponent implements OnInit {
     this.levelResources = () => {
       // Level the assigned resources for all tasks, including the already started ones, considering the current time displayed in the chart.
       this.ganttChartView.levelResources(true, this.ganttChartView.settings.currentTime);
-    // Alternatively, optimize work to obtain the minimum project finish date and time assuming unlimited resource availability:
-    // ganttChartView.optimizeWork(false, true, ganttChartView.settings.currentTime);
+      // Alternatively, optimize work to obtain the minimum project finish date and time assuming unlimited resource availability:
+      // ganttChartView.optimizeWork(false, true, ganttChartView.settings.currentTime);
     }
     this.print = () => {
       // Print the task hierarchy column and a selected timeline page of 5 weeks (timeline end week extensions would be added automatically, if necessary).
@@ -279,5 +280,49 @@ export class AppComponent implements OnInit {
     // Optionally, initialize custom theme and templates (themes.js, templates.js).
     initializeGanttChartTheme(this.settings, this.theme);
     initializeGanttChartTemplates(this.settings, this.theme);
+  }
+
+  addpart() {
+    const gcItem = this.ganttChartView.items[5];
+
+    const parts = this.createParts();
+
+    const ri: GanttChartView.Item = {
+      content: "New part",
+      start: parts[0].start,
+      finish: parts[1].finish,
+      isExpanded: gcItem.isExpanded,
+      isSummaryEnabled: false,
+      indentation: 0,
+      parts: parts
+    };
+
+    this.ganttChartView.addItem(ri);
+  }
+
+  createParts(): GanttChartView.Item[] {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth();
+
+    const part1start = new Date(year, month, 1);
+    const part1finish = new Date(year, month, 10);
+    const part2start = new Date(year, month, 15);
+    const part2finish = new Date(year, month, 20);
+
+    const parts: GanttChartView.Item[] = [
+      {
+        content: "part 1",
+        start: part1start,
+        finish: part1finish,
+      }, {
+        content: "part 2",
+        start: part2start,
+        finish: part2finish,
+      }
+    ];
+
+    return parts;
+
   }
 }

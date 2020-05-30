@@ -328,6 +328,14 @@
       <div class="ribbonCommand"><a href="javascript://" (click)="print()" title="Print"><img src="assets/images/Print.png" alt="Print" /></a></div>
     </div>
   </div>
+
+  <div class="ribbonPanel">
+    <div class="ribbonHeader">ERRORCHECK</div>
+    <div class="ribbonCommandsArea">
+      <div class="ribbonCommand"><a href="javascript://" (click)="addpart()" title="Test parts">Test parts</a></div>
+    </div>
+  </div>
+
 </div>
 <!-- Gantt Chart component. -->
 <ganttchartview #ganttChartView [items]="items" [settings]="settings" [change]="onItemChanged" style="min-height: 388px">...</ganttchartview>
