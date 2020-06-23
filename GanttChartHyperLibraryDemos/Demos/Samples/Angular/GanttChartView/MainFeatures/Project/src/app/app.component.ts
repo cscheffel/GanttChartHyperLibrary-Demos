@@ -65,7 +65,7 @@ export class AppComponent implements OnInit {
       { content: 'Task 3', indentation: 1, start: new Date(year, month, 15, 16, 0, 0), isMilestone: true },
       { content: 'Task 4', indentation: 1, start: new Date(year, month, 15, 16, 0, 0), finish: new Date(year, month, 18, 16, 0, 0) },
       { content: 'Task 5', indentation: 1, start: new Date(year, month, 16, 16, 0, 0), finish: new Date(year, month, 17, 16, 0, 0) },
-      { content: 'Task with parts', indentation: 1, start: new Date(year, month, 16, 16, 0, 0), finish: new Date(year, month, 17, 16, 0, 0), parts: this.createParts()}];
+      { content: 'Task with parts', indentation: 1, start: new Date(year, month, 16, 16, 0, 0), finish: new Date(year, month, 17, 16, 0, 0), parts: this.createParts() }];
 
     items[2].predecessors = <PredecessorItem[]>[{ item: items[1] }]; // Task 2 depends on Task 1.
     items[7].predecessors = <PredecessorItem[]>[{ item: items[6], dependencyType: 'StartStart' }]; // Task 6 depends on Task 5 using Start-Start dependency type.
@@ -298,6 +298,44 @@ export class AppComponent implements OnInit {
     };
 
     this.ganttChartView.addItem(ri);
+
+
+    setTimeout(() => {
+
+      const parts2 = this.createParts2();
+      const ri1 = this.ganttChartView.items.find(i => i.content === "New part");
+
+      ri1.parts.forEach(part => {
+        this.ganttChartView.removeItem(part);
+        ri1.parts.slice(1, 1);
+      });
+
+      parts2.forEach(part => {
+        ri1.parts.push(part);
+        this.ganttChartView.addItem(part);
+      });
+
+
+      setTimeout(() => {
+        const parts3 = this.createParts3();
+        const ri2 = this.ganttChartView.items.find(i => i.content === "New part");
+
+        ri2.parts.forEach(part => {
+          this.ganttChartView.removeItem(part);
+          ri2.parts.slice(1, 1);
+        });
+  
+        parts3.forEach(part => {
+          ri2.parts.push(part);
+          this.ganttChartView.addItem(part);
+        });
+  
+      }, 1000);
+  
+
+    }, 1000);
+
+
   }
 
   createParts(): GanttChartView.Item[] {
@@ -319,6 +357,53 @@ export class AppComponent implements OnInit {
         content: "part 2",
         start: part2start,
         finish: part2finish,
+      }
+    ];
+
+    return parts;
+
+  }
+
+  createParts2(): GanttChartView.Item[] {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth();
+
+    const part1start = new Date(year, month, 4);
+    const part1finish = new Date(year, month, 14);
+    const part2start = new Date(year, month, 19);
+    const part2finish = new Date(year, month, 24);
+
+    const parts: GanttChartView.Item[] = [
+      {
+        content: "part 1",
+        start: part1start,
+        finish: part1finish,
+      }, {
+        content: "part 2",
+        start: part2start,
+        finish: part2finish,
+      }
+    ];
+
+    return parts;
+
+  }
+
+
+  createParts3(): GanttChartView.Item[] {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth();
+
+    const part1start = new Date(year, month, 9);
+    const part1finish = new Date(year, month, 19);
+
+    const parts: GanttChartView.Item[] = [
+      {
+        content: "part 1",
+        start: part1start,
+        finish: part1finish,
       }
     ];
 
